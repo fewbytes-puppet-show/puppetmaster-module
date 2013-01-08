@@ -1,0 +1,22 @@
+puppetmaster
+
+This is the puppetmaster module. This modules installs a fully functional production
+ready puppetmaster with puppetdb using gems and unicorn.
+
+License
+-------
+
+Apache v2
+
+Platforms
+-------
+
+Currently, only Ubuntu >= 12.04 is supported.
+
+Contact
+-------
+
+
+Support
+-------
+
