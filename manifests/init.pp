@@ -35,8 +35,12 @@
 #
 # Copyright 2013 Your name here, unless otherwise noted.
 #
-class puppetmaster ( $autosign = true ) {
+class puppetmaster ( 
+	$autosign = true,
+	$service_ip=$ipaddress
+	) {
 	include puppetdb
+	include ruby::dev
 
 	package{"unicorn": provider => gem }
 	package{"puppetdb-terminus": }
@@ -45,7 +49,7 @@ class puppetmaster ( $autosign = true ) {
 		mode => 644,
 	}
 	class{"puppetdb::master::routes": notify => Service[puppetmaster]}
-	class{"puppetdb::master::puppetdb_conf": notify => Service[puppetmaster], server => $ipaddress }
+	class{"puppetdb::master::puppetdb_conf": notify => Service[puppetmaster], server => $hostname }
 	file{"/etc/puppet/rack": ensure => directory, mode => 644, before => Service[puppetmaster]}
 	file{"/etc/puppet/rack/public": ensure => directory, mode => 644, before => Service[puppetmaster]}
 	file{"/etc/puppet/rack/config.ru": ensure => present, mode => 644, source => "puppet:///modules/puppetmaster/config.ru", before => Service[puppetmaster]}
@@ -56,7 +60,7 @@ class puppetmaster ( $autosign = true ) {
 		source => "puppet:///modules/puppetmaster/puppetmaster.upstart.conf", 
 		notify => Service[puppetmaster]
 	}
-	exec{"puppet cert generate ${::fqdn} --dns_alt_names=${::hostname},${::ipaddress}": 
+	exec{"puppet cert generate ${::fqdn} --dns_alt_names=${::hostname},${service_ip}": 
 		path => "/usr/bin:/usr/local/bin:/bin",
 		creates => "/var/lib/puppet/ssl/private_keys/${::fqdn}.pem"
 	}
@@ -66,7 +70,7 @@ class puppetmaster ( $autosign = true ) {
 	# make sure puppetdb has a valid cert
 	exec{"/usr/sbin/puppetdb-ssl-setup":
 		creates => "/etc/puppetdb/ssl/keystore.jks",
-		require => Exec["puppet cert generate ${::fqdn} --dns_alt_names=${::hostname},${::ipaddress}"],
+		require => Exec["puppet cert generate ${::fqdn} --dns_alt_names=${::hostname},${service_ip}"],
 		notify => Service[puppetdb]
 	}
 
