@@ -11,7 +11,7 @@ Apache v2
 Platforms
 -------
 
-Currently, only Ubuntu >= 12.04 is supported.
+Currently, only Ubuntu >= 12.04 is supported, but CentOS 6.x seems to work ok
 
 Contact
 -------
