@@ -9,5 +9,5 @@ project_page 'UNKNOWN'
 
 ## Add dependencies, if any:
 dependency 'puppetlabs/puppetdb'
-dependency 'puppetlabs/apache', '>= 0.4.0'
+dependency 'puppetlabs/apache', '>= 0.8.0'
 

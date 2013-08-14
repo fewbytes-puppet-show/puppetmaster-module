@@ -1,19 +1,7 @@
-# Installed by puppet
 
-Listen 8140
-
-<VirtualHost *:8140>
-        SSLEngine on
         SSLProtocol -ALL +SSLv3 +TLSv1
         SSLCipherSuite ALL:!ADH:RC4+RSA:+HIGH:+MEDIUM:-LOW:-SSLv2:-EXP
 
-        SSLCertificateFile      /var/lib/puppet/ssl/certs/<%= scope.lookupvar("fqdn") %>.pem
-        SSLCertificateKeyFile   /var/lib/puppet/ssl/private_keys/<%= scope.lookupvar("fqdn") %>.pem
-        SSLCertificateChainFile /var/lib/puppet/ssl/ca/ca_crt.pem
-        SSLCACertificateFile    /var/lib/puppet/ssl/ca/ca_crt.pem
-        # If Apache complains about invalid signatures on the CRL, you can try disabling
-        # CRL checking by commenting the next line, but this is not recommended.
-        SSLCARevocationFile     /var/lib/puppet/ssl/ca/ca_crl.pem
         SSLVerifyClient optional
         SSLVerifyDepth  1
         # The `ExportCertData` option is needed for agent certificate expiration warnings
@@ -26,11 +14,8 @@ Listen 8140
         RequestHeader set X-Client-DN %{SSL_CLIENT_S_DN}e
         RequestHeader set X-Client-Verify %{SSL_CLIENT_VERIFY}e
 
-        DocumentRoot /etc/puppet/rack/public/
-	ProxyPass / http://localhost:3000/
+        ProxyPass / http://localhost:3000/
 	ProxypassReverse / http://localhost:3000/
 	<Location />
 		Allow from all
 	</Location>
-</VirtualHost>
-

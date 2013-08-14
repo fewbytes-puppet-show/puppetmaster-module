@@ -37,7 +37,7 @@
 #
 class puppetmaster ( $autosign = true ) {
 	include puppetdb
-	
+
 	package{"unicorn": provider => gem }
 	package{"puppetdb-terminus": }
 	file{"/etc/puppet/puppet.conf":
@@ -74,12 +74,19 @@ class puppetmaster ( $autosign = true ) {
 	include apache::mod::ssl
 	include apache::mod::proxy
 	include apache::mod::proxy_http
+	include apache::mod::mime
+
 	apache::mod{headers: }
 	apache::vhost{"puppet":
 		port  => 8140,
 		ssl => true,
+		ssl_cert => "/var/lib/puppet/ssl/certs/${::fqdn}.pem",
+		ssl_key => "/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",
+		ssl_ca => "/var/lib/puppet/ssl/ca/ca_crt.pem",
+		ssl_chain => "/var/lib/puppet/ssl/ca/ca_crt.pem",
+		ssl_crl => "/var/lib/puppet/ssl/ca/ca_crl.pem",
 		servername => $fqdn,
 		docroot => "/etc/puppet/rack/public",
-		template => "puppetmaster/apache.conf.erb"
+		custom_fragment => template("puppetmaster/apache.conf.erb")
 	}
 }
