@@ -1,0 +1,9 @@
+[files]
+  path <%= @puppet_files_dir %>
+  allow *
+
+<% @puppet_files_mounts.each do |name, opts| -%>
+[<%= name]%>]
+<% opts.each do |k, v| -%>
+  <%= k %> <%= v %>
+<% end; end -%>

@@ -11,4 +11,4 @@ project_page 'UNKNOWN'
 dependency 'puppetlabs/puppetdb'
 dependency 'puppetlabs/apache', '>= 0.8.0'
 dependency 'puppetlabs/ruby'
-
+dependency 'fewbytes/upstart'

@@ -47,6 +47,12 @@ class puppetmaster (
 	file{"/etc/puppet/puppet.conf":
 		content => template("puppetmaster/puppet.conf.erb"),
 		mode => 644,
+		notify => Service[puppetmaster]
+	}
+	file{"/etc/puppet/fileserver.conf":
+		content => template("puppetmaster/fileserver.conf.erb"),
+		mode => 644,
+		notify => Service[puppetmaster]
 	}
 	class{"puppetdb::master::routes": notify => Service[puppetmaster]}
 	class{"puppetdb::master::puppetdb_conf": notify => Service[puppetmaster], server => $hostname }
@@ -54,19 +60,17 @@ class puppetmaster (
 	file{"/etc/puppet/rack/public": ensure => directory, mode => 644, before => Service[puppetmaster]}
 	file{"/etc/puppet/rack/config.ru": ensure => present, mode => 644, source => "puppet:///modules/puppetmaster/config.ru", before => Service[puppetmaster]}
 	file{"/etc/puppet/rack/unicorn.rb": ensure => present, mode => 644, source => "puppet:///modules/puppetmaster/unicorn.rb", before => Service[puppetmaster] }
-	file{"/etc/init/puppetmaster.conf":
-		ensure => present,
-		mode => 644,
-		source => "puppet:///modules/puppetmaster/puppetmaster.upstart.conf", 
-		notify => Service[puppetmaster]
-	}
+
 	exec{"puppet cert generate ${::fqdn} --dns_alt_names=${::hostname},${service_ip}": 
 		path => "/usr/bin:/usr/local/bin:/bin",
 		creates => "/var/lib/puppet/ssl/private_keys/${::fqdn}.pem"
 	}
 	->
-	service{"puppetmaster": ensure => running}
-	
+	upstart::service{"puppetmaster":
+		chdir => "/etc/puppet/rack",
+		exec => "unicorn -c /etc/puppet/rack/unicorn.rb /etc/puppet/rack/config.ru"
+	}
+		
 	# make sure puppetdb has a valid cert
 	exec{"/usr/sbin/puppetdb-ssl-setup":
 		creates => "/etc/puppetdb/ssl/keystore.jks",
