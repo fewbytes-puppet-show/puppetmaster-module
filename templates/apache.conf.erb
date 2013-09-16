@@ -7,15 +7,6 @@
         # The `ExportCertData` option is needed for agent certificate expiration warnings
         SSLOptions +StdEnvVars +ExportCertData
 
-        # This header needs to be set if using a loadbalancer or proxy
-        RequestHeader unset X-Forwarded-For
-
-        RequestHeader set X-SSL-Subject %{SSL_CLIENT_S_DN}e
-        RequestHeader set X-Client-DN %{SSL_CLIENT_S_DN}e
-        RequestHeader set X-Client-Verify %{SSL_CLIENT_VERIFY}e
-
-        ProxyPass / http://localhost:3000/
-	ProxypassReverse / http://localhost:3000/
 	<Location />
 		Allow from all
 	</Location>

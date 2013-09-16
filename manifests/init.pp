@@ -36,13 +36,20 @@
 # Copyright 2013 Your name here, unless otherwise noted.
 #
 class puppetmaster ( 
-	$autosign = true,
-	$service_ip=$ipaddress
+	$autosign				 = true,
+	$service_ip				 = $ipaddress
+	$files_repo              = "/srv/puppet/files",
+	$fileserver_extra_mounts = [],
+	$use_rubygmes            = true
 	) {
 	include puppetdb
-	include ruby::dev
-
-	package{"unicorn": provider => gem }
+	
+	if $use_rubygmes {
+		include ruby::dev
+		package{"unicorn": provider => gem }
+	} else {
+		package{"rubygem-unicorn": alias => "unicorn"}
+	}
 	package{"puppetdb-terminus": }
 	file{"/etc/puppet/puppet.conf":
 		content => template("puppetmaster/puppet.conf.erb"),
@@ -53,6 +60,14 @@ class puppetmaster (
 		content => template("puppetmaster/fileserver.conf.erb"),
 		mode => 644,
 		notify => Service[puppetmaster]
+	}
+	file{"/etc/puppet/auth.conf":
+		content => template("puppetmaster/auth.conf.erb"),
+		mode => 644,
+		notify => Service[puppetmaster]
+	}
+	file{[dirname($files_repo), "$files_repo"]:
+		ensure => directory
 	}
 	class{"puppetdb::master::routes": notify => Service[puppetmaster]}
 	class{"puppetdb::master::puppetdb_conf": notify => Service[puppetmaster], server => $hostname }
@@ -68,7 +83,8 @@ class puppetmaster (
 	->
 	upstart::service{"puppetmaster":
 		chdir => "/etc/puppet/rack",
-		exec => "unicorn -c /etc/puppet/rack/unicorn.rb /etc/puppet/rack/config.ru"
+		exec => "unicorn -c /etc/puppet/rack/unicorn.rb /etc/puppet/rack/config.ru",
+		require => Package[unicorn]
 	}
 		
 	# make sure puppetdb has a valid cert
@@ -95,6 +111,13 @@ class puppetmaster (
 		ssl_crl => "/var/lib/puppet/ssl/ca/ca_crl.pem",
 		servername => $fqdn,
 		docroot => "/etc/puppet/rack/public",
+		proxy_pass => [{path => "/", url => "http://localhost:3000/"}],
+		request_headers => [
+			"unset X-Forwarded-For",
+			"set X-SSL-Subject %{SSL_CLIENT_S_DN}e",
+        	"set X-Client-DN %{SSL_CLIENT_S_DN}e",
+        	"set X-Client-Verify %{SSL_CLIENT_VERIFY}e"
+		]
 		custom_fragment => template("puppetmaster/apache.conf.erb")
 	}
 }
