@@ -42,6 +42,14 @@ class puppetmaster (
 	$fileserver_extra_mounts = [],
 	$use_rubygems            = true
 	) {
+
+	if $::fqdn == undef or $::fqdn == "" {
+		warning("fqdn not defined, using hostname instead")
+		$fqdn_real = $::hostname
+	} else {
+		$fqdn_real = $::fqdn
+	}
+
 	include puppetdb
 	
 	if $use_rubygmes {
