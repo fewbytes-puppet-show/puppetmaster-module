@@ -40,7 +40,7 @@ class puppetmaster (
 	$service_ip				 = $ipaddress,
 	$files_repo              = "/srv/puppet/files",
 	$fileserver_extra_mounts = [],
-	$use_rubygmes            = true
+	$use_rubygems            = true
 	) {
 	include puppetdb
 	
