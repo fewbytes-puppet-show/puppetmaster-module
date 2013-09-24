@@ -2,7 +2,7 @@
   path <%= @puppet_files_dir %>
   allow *
 
-<% @puppet_files_mounts.each do |name, opts| -%>
+<% @fileserver_extra_mounts.each do |name, opts| -%>
 [<%= name %>]
 <% opts.each do |k, v| -%>
   <%= k %> <%= v %>
