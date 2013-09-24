@@ -37,7 +37,7 @@
 #
 class puppetmaster ( 
 	$autosign				 = true,
-	$service_ip				 = $ipaddress
+	$service_ip				 = $ipaddress,
 	$files_repo              = "/srv/puppet/files",
 	$fileserver_extra_mounts = [],
 	$use_rubygmes            = true
@@ -117,7 +117,7 @@ class puppetmaster (
 			"set X-SSL-Subject %{SSL_CLIENT_S_DN}e",
         	"set X-Client-DN %{SSL_CLIENT_S_DN}e",
         	"set X-Client-Verify %{SSL_CLIENT_VERIFY}e"
-		]
+		],
 		custom_fragment => template("puppetmaster/apache.conf.erb")
 	}
 }
