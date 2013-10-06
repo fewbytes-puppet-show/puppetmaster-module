@@ -107,8 +107,8 @@ class puppetmaster (
 	include apache::mod::proxy
 	include apache::mod::proxy_http
 	include apache::mod::mime
+	include apache::mod::headers
 
-	apache::mod{headers: }
 	apache::vhost{"puppet":
 		port  => 8140,
 		ssl => true,
