@@ -52,7 +52,7 @@ class puppetmaster (
 
 	include puppetdb
 	
-	if $use_rubygmes {
+	if $use_rubygems {
 		include ruby::dev
 		package{"unicorn": provider => gem }
 	} else {
