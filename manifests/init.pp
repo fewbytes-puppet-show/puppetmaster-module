@@ -45,9 +45,9 @@ class puppetmaster (
 
 	if $::fqdn == undef or $::fqdn == "" {
 		warning("fqdn not defined, using hostname instead")
-		$fqdn_real = $::hostname
+		$fqdn_real = downcase($::hostname)
 	} else {
-		$fqdn_real = $::fqdn
+		$fqdn_real = downcase($::fqdn)
 	}
 
 	include puppetdb
@@ -112,8 +112,8 @@ class puppetmaster (
 	apache::vhost{"puppet":
 		port  => 8140,
 		ssl => true,
-		ssl_cert => "/var/lib/puppet/ssl/certs/${::fqdn}.pem",
-		ssl_key => "/var/lib/puppet/ssl/private_keys/${::fqdn}.pem",
+		ssl_cert => "/var/lib/puppet/ssl/certs/${fqdn_real}.pem",
+		ssl_key => "/var/lib/puppet/ssl/private_keys/${fqdn_real}.pem",
 		ssl_ca => "/var/lib/puppet/ssl/ca/ca_crt.pem",
 		ssl_chain => "/var/lib/puppet/ssl/ca/ca_crt.pem",
 		ssl_crl => "/var/lib/puppet/ssl/ca/ca_crl.pem",
