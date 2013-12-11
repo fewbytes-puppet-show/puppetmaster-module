@@ -1,5 +1,5 @@
 name    'fewbytes/puppetmaster'
-version '0.0.1'
+version '0.1.0'
 source 'UNKNOWN'
 author 'fewbytes'
 license 'Apache License, Version 2.0'
